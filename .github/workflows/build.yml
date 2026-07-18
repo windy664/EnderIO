@@ -1,0 +1,38 @@
+name: Build port/26.2
+
+on:
+  push:
+    branches:
+      - 'port/26.2'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+
+      - uses: gradle/actions/setup-gradle@v3
+
+      - name: Build
+        run: ./gradlew build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: enderio-26.2-build
+          path: |
+            endercore/build/libs/*.jar
+            enderio/build/libs/*.jar
