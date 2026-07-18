@@ -27,10 +27,15 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v3
 
-      - name: Build
-        run: ./gradlew build
+      - name: Build (with retry)
+        run: |
+          for i in 1 2 3; do
+            echo "Attempt $i..."
+            ./gradlew build --no-configuration-cache && break || sleep 30
+          done
 
       - uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: enderio-26.2-build
           path: |
